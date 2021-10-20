@@ -4,7 +4,7 @@ project(esplogtest)
 set(PORT /dev/ttyS4)
 set(idf_path ${CMAKE_CURRENT_LIST_DIR}/esp-idf)
 set(ENV{IDF_PATH} ${idf_path})
-set(ENV{IDF_MAINTAINER} true)
+# set(ENV{IDF_MAINTAINER} true)
 
 # Generate custom launcher
 set(launcher_file ${CMAKE_CURRENT_BINARY_DIR}/runtool.sh)
