@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14) # For RULE_LAUNCH_CUSTOM fix
 project(esplogtest)
 
-set(PORT /dev/ttyS5) # COM6
+set(PORT /dev/ttyS6) # COM7
 set(idf_path ${CMAKE_CURRENT_LIST_DIR}/esp-idf)
 set(ENV{IDF_PATH} ${idf_path})
 
@@ -480,7 +480,7 @@ add_custom_target(run
     --port ${PORT}
     write_flash
     # From flash_app_args
-    --flash_mode dio --flash_freq 40m --flash_size 16MB
+    --flash_mode dio --flash_freq 40m --flash_size 4MB
     0x10000 check.bin
     COMMAND
     ${PYTHON} ${idf_path}/tools/idf_monitor.py
