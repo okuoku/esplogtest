@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14) # For RULE_LAUNCH_CUSTOM fix
 project(esplogtest)
 
-set(PORT /dev/ttyS4)
+set(PORT /dev/ttyS5) # COM6
 set(idf_path ${CMAKE_CURRENT_LIST_DIR}/esp-idf)
 set(ENV{IDF_PATH} ${idf_path})
 
@@ -455,6 +455,8 @@ idf_build_process(esp32
     COMPONENTS esp32 freertos esptool_py
     # BTstack
     bt nvs_flash
+    # my app
+    esp_http_server # Need to be in COMPONENTS to see it in `menuconfig`
     )
 add_executable(check 
     ${btstack_srcs}
@@ -462,17 +464,39 @@ add_executable(check
 target_link_libraries(check
     idf::bt
     idf::nvs_flash
+    idf::esp_http_server
     idf::newlib)
 idf_build_executable(check)
 
 
-# Custom projects for tools
+# Custom targets for tools
+
+add_custom_target(run
+    COMMAND
+    ${PYTHON} ${idf_path}/components/esptool_py/esptool/esptool.py
+    --chip esp32
+    --baud 115200
+    --after hard_reset
+    --port ${PORT}
+    write_flash
+    # From flash_app_args
+    --flash_mode dio --flash_freq 40m --flash_size 16MB
+    0x10000 check.bin
+    COMMAND
+    ${PYTHON} ${idf_path}/tools/idf_monitor.py
+    --port ${PORT}
+    --baud 115200
+    --decode-coredumps info
+    --decode-panic backtrace
+    ${CMAKE_CURRENT_BINARY_DIR}/check
+    USES_TERMINAL)
 
 add_custom_target(mon
     COMMAND
     ${PYTHON} ${idf_path}/tools/idf_monitor.py
     --port ${PORT}
     --baud 115200
-    esp32test.elf
+    check.elf
     USES_TERMINAL)
+
 
